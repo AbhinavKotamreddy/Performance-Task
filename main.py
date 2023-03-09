@@ -21,9 +21,10 @@ pygame.display.set_caption('Pong')
 
 class Paddle():
 	def __init__(self,x, y):
+		self.surf=pygame.Surface((10,60))
+		self.surf.fill((255,255,255))	
 		self.x = x
 		self.y = y
-		self.image = pygame.image.load("gun1.png")
 		self.last_shot = pygame.time.get_ticks()
 
 
@@ -33,6 +34,7 @@ class Paddle():
 		#set a cooldown variable
 		cooldown = 350 #milliseconds
 		game_over = 0
+		
 
 
 		#get key press
@@ -48,22 +50,29 @@ class Paddle():
 			bullet = Bullets(self.x,self.y)
 			self.last_shot = time_now
         #update mask
-		rect = self.image.get_rect(center = (self.x, self.y))
-		screen.blit(self.image, rect)
+		screen.blit(self.surf,(self.x,self.y))
 		      
 #Create bullet class
-class Bullets(pygame.sprite.Sprite):
+class Bullets():
 		def __init__(self, x, y):
-			pygame.sprite.Sprite.__init__(self)
-			self.image = pygame.image.load("bullet2.png")
-			self.rect = self.image.get_rect()
-			self.rect.center = [x, y]
+			self.surf=pygame.Surface((10,10))
+			self.surf.fill((254,255,255))			
+			self.x = x
+			self.y = y
+		key = pygame.key.get_pressed()
+		def update(self):
+			self.x += 5
+			screen.blit(self.surf,(self.x,self.y))
+		if key[pygame.K_SPACE]:
+			self.surf=pygame.Surface((10,10))
+			self.surf.fill((254,255,255))			
+			self.x = x
+			self.y = y
 
-bullet_group = pygame.sprite.Group()
+			
 #create player
 paddle = Paddle(50, 225)
-
-
+x = Bullets(50, 225)
 run = True
 while run:
 
@@ -75,7 +84,7 @@ while run:
 			if event.key == K_ESCAPE:
 				run =False
 	screen.fill((0, 0, 0))
-	bullet_group.draw(screen)
+	x.update()
 	paddle.update()
 	pygame.display.update()
 	pygame.display.flip()
