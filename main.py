@@ -47,13 +47,8 @@ class Paddle():
 			self.y = self.y - speed
 		if key[pygame.K_s] and self.team == 1:
 			self.y = self.y + speed
-		if key[pygame.K_d] and self.team == 1:
-			self.x = self.x + speed
-		if key[pygame.K_a] and self.team == 1:
-			self.x = self.x - speed
-		#record current time
 		#shoot
-		if key[pygame.K_SPACE] and time.time() - self.time > 0.3 and self.team == 1:
+		if key[pygame.K_SPACE] and time.time() - self.time > 0.7 and self.team == 1:
 			bullets.append(Bullet(self.x, self.y, self.team))
 			self.time = time.time()
 		if key[pygame.K_UP] and self.team == 2:
@@ -64,7 +59,7 @@ class Paddle():
 			self.y = 410
 		if self.y < 40:
 			self.y = 40
-		if key[pygame.K_LEFT] and time.time() - self.time > 0.3 and self.team == 2:
+		if key[pygame.K_LEFT] and time.time() - self.time > 0.7 and self.team == 2:
 			bullets.append(Bullet(self.x, self.y, self.team))
 			self.time = time.time()
         #update mask
@@ -81,7 +76,7 @@ class Bullet:
         self.surf.fill((255,255,255))
         self.rect = self.surf.get_rect()
         self.rect.center = (self.x, self.y)
-    def update(self):
+    def update(self, ball):
         if self.x<0 or self.x > screen_width:
             return 1
         if self.team == 1:
@@ -90,31 +85,45 @@ class Bullet:
              self.x = self.x - self.speed
         self.rect.center = (self.x, self.y)
         screen.blit(self.surf,self.rect)
+        if self.y + 10 >= ball.y and self.y - 10 <= ball.y and self.x - 10 <= ball.x and self.x + 10 >= ball.x:
+            bullets.remove(self)
+            ball.velocityX*=-1
 class Ball:
 	def __init__(self,x, y):
 		self.x = x
 		self.y = y
-		self.velocity = [5,5]
+		self.velocityX = randint(3,5)
+		if random.randint(0, 1) == 0:
+			self.velocityX *= -1
+		self.velocityY = randint(3,5)
+		if random.randint(0, 1) == 0:
+			self.velocityY *= -1
+		# self.velocityY = randint(1,4)
 		#self.velocity = [randint(4,8),randint(-8,8)]
 		self.surf = pygame.Surface((10,10))
-		self.surf.fill((255,255,255))
+		self.surf.fill((255,255, 254))
 		self.rect = self.surf.get_rect()
-	def update(self):
-		if ball.rect.x>= 840:
-			ball.velocity[0] *= -1
-		if ball.rect.x<= 0:
-			ball.velocity[0] += -1
-		if ball.rect.y>= 450:
-			ball.velocity[1] *= -1
-		if ball.rect.y<= 0:
-			ball.velocity[1] *=-1
-		#self.rect.x += self.velocity[0]
-		#self.rect.y += self.velocity[1]
+	def update(self, paddle, paddle2):
+		if self.x>= 840:
+			self.velocityX *= -1
+		if self.x<= 0:
+			self.velocityX *= -1
+		if self.y>= 450:
+			self.velocityY *= -1
+		if self.y<= 0:
+			self.velocityY *=-1
+		self.x += self.velocityX
+		self.y += self.velocityY
+		if self.y + 35 >= paddle.y and self.y - 35 <= paddle.y and self.x - 10 <= paddle.x and self.x + 10 >= paddle.x:
+			self.velocityX *= -1	
+		if self.y + 35 >= paddle2.y and self.y - 35 <= paddle2.y and self.x - 10 <= paddle2.x and self.x + 10 >= paddle2.x:
+			self.velocityX *= -1
+		print(self.x)
 		self.rect.center = (self.x, self.y)
 		screen.blit(self.surf,self.rect)
-	def bounce(self):
-		self.velocity[0] = -self.velocity[0]
-		self.velocity[1] = randint(-8,8)
+	# def bounce(self):
+	# 	self.velocity[0] = -self.velocity[0]
+	# 	self.velocity[1] = randint(-8,8)
 
 
 
@@ -135,23 +144,14 @@ while run:
 		if event.type == pygame.KEYDOWN:
 			if event.key == K_ESCAPE:
 				run =False
-	"""if ball.rect.x>= 840:
-		ball.velocity[0] = -ball.velocity[0]
-	if ball.rect.x<= 0:
-		ball.velocity[0] = -ball.velocity[0]
-	if ball.rect.y>= 450:
-		ball.velocity[1] = -ball.velocity[1]
-	if ball.rect.y<= 0:
-		ball.velocity[1] = -ball.velocity[1]
-	if ball.rect.x == paddle.rect.x and ball.rect.y == paddle.rect.y:
-		ball.velocity[0]=-ball.velocity[0]
-		"""
+	
+	
 	screen.fill((0, 0, 0))
 	paddle.update()
 	paddle2.update()
-	ball.update()
+	ball.update(paddle, paddle2)
 	for bullet in bullets:
-		if bullet.update(): 
+		if bullet.update(ball): 
 			bullets.remove(bullet)
 	pygame.display.update()
 	pygame.display.flip()
