@@ -18,9 +18,14 @@ fps = 60
 screen_width = 840
 screen_height = 450
 bullets = []
+white = (255,255,255)
+global ScoreA 
+global ScoreB
+ScoreA = 0
+ScoreB = 0
 
 screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption('Totally Regular Normal Standard Typical Common Ordinary Traditional Simple Conventional Natural Commonplace Pong')
+pygame.display.set_caption('Pong But You Have A Gun')
 
 class Paddle():
 	def __init__(self,x, y,team):
@@ -38,9 +43,6 @@ class Paddle():
 	def update(self):
 		#set movement speed
 		speed = 10
-		
-
-
 		#get key press
 		key = pygame.key.get_pressed()
 		if key[pygame.K_w] and self.team == 1:
@@ -98,16 +100,15 @@ class Ball:
 		self.velocityY = randint(3,5)
 		if random.randint(0, 1) == 0:
 			self.velocityY *= -1
-		# self.velocityY = randint(1,4)
-		#self.velocity = [randint(4,8),randint(-8,8)]
 		self.surf = pygame.Surface((10,10))
-		self.surf.fill((255,255, 254))
+		self.surf.fill((255,255, 255))
 		self.rect = self.surf.get_rect()
 	def update(self, paddle, paddle2):
+		global ScoreA, ScoreB
 		if self.x>= 840:
-			self.velocityX *= -1
+			ScoreA+=1
 		if self.x<= 0:
-			self.velocityX *= -1
+			ScoreB+=1
 		if self.y>= 450:
 			self.velocityY *= -1
 		if self.y<= 0:
@@ -115,28 +116,21 @@ class Ball:
 		self.x += self.velocityX
 		self.y += self.velocityY
 		if self.y + 35 >= paddle.y and self.y - 35 <= paddle.y and self.x - 10 <= paddle.x and self.x + 10 >= paddle.x:
-			self.velocityX *= -1	
+			self.velocityX *= -1.2	
 		if self.y + 35 >= paddle2.y and self.y - 35 <= paddle2.y and self.x - 10 <= paddle2.x and self.x + 10 >= paddle2.x:
-			self.velocityX *= -1
-		print(self.x)
+			self.velocityX *= -1.2
 		self.rect.center = (self.x, self.y)
 		screen.blit(self.surf,self.rect)
-	# def bounce(self):
-	# 	self.velocity[0] = -self.velocity[0]
-	# 	self.velocity[1] = randint(-8,8)
-
-
-
 	
 		
-			
 #create player
 paddle = Paddle(50, 225, 1)
 paddle2 = Paddle(800, 225, 2)
 ball = Ball(420,225)
+
 run = True
 while run:
-
+	
 	#event handlers
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -144,8 +138,11 @@ while run:
 		if event.type == pygame.KEYDOWN:
 			if event.key == K_ESCAPE:
 				run =False
-	
-	
+	font = pygame.font.Font('freesansbold.ttf', 74)
+	text = font.render(str(ScoreA), 1, white)
+	screen.blit(text, (250,10))
+	text = font.render(str(ScoreB), 1, white)
+	screen.blit(text, (420,10))
 	screen.fill((0, 0, 0))
 	paddle.update()
 	paddle2.update()
