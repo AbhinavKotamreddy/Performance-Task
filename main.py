@@ -18,11 +18,7 @@ fps = 60
 screen_width = 840
 screen_height = 450
 bullets = []
-white = (255,255,255)
-global ScoreA 
-global ScoreB
-ScoreA = 0
-ScoreB = 0
+font = pygame.font.Font('freesansbold.ttf', 24)
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Pong But You Have A Gun')
@@ -38,6 +34,17 @@ class Paddle():
 		self.rect = self.surf.get_rect()
 		self.rect.center = (self.x, self.y)
 
+	def displayScore(self, text, score, x, y, color):
+		text = font.render(text+str(score), True, color)
+		textRect = text.get_rect()
+		textRect.center = (x,y)
+		screen.blit(text, textRect)
+
+	def displayWin(self, text, x, y, color):
+		text = font.render(text, True, color)
+		textRect = text.get_rect()
+		textRect.center = (x,y)
+		screen.blit(text, textRect)
 
 
 	def update(self):
@@ -94,21 +101,37 @@ class Ball:
 	def __init__(self,x, y):
 		self.x = x
 		self.y = y
-		self.velocityX = randint(3,5)
+		self.velocityX = randint(2,3)
 		if random.randint(0, 1) == 0:
 			self.velocityX *= -1
-		self.velocityY = randint(3,5)
+		self.velocityY = randint(2,3)
 		if random.randint(0, 1) == 0:
 			self.velocityY *= -1
 		self.surf = pygame.Surface((10,10))
 		self.surf.fill((255,255, 255))
 		self.rect = self.surf.get_rect()
 	def update(self, paddle, paddle2):
-		global ScoreA, ScoreB
+		global paddleScore, paddle2Score
 		if self.x>= 840:
-			ScoreA+=1
+			paddleScore+=1
+			self.x = 420
+			self.y = 225
+			self.velocityX = randint(2,3)
+			if random.randint(0, 1) == 0:
+				self.velocityX *= -1
+			self.velocityY = randint(2,3)
+			if random.randint(0, 1) == 0:
+				self.velocityY *= -1
 		if self.x<= 0:
-			ScoreB+=1
+			paddle2Score+=1
+			self.x = 420
+			self.y = 225
+			self.velocityX = randint(2,3)
+			if random.randint(0, 1) == 0:
+				self.velocityX *= -1
+			self.velocityY = randint(2,3)
+			if random.randint(0, 1) == 0:
+				self.velocityY *= -1
 		if self.y>= 450:
 			self.velocityY *= -1
 		if self.y<= 0:
@@ -121,13 +144,14 @@ class Ball:
 			self.velocityX *= -1.2
 		self.rect.center = (self.x, self.y)
 		screen.blit(self.surf,self.rect)
-	
+		
 		
 #create player
 paddle = Paddle(50, 225, 1)
 paddle2 = Paddle(800, 225, 2)
 ball = Ball(420,225)
-
+paddleScore = 0
+paddle2Score = 0
 run = True
 while run:
 	
@@ -138,15 +162,16 @@ while run:
 		if event.type == pygame.KEYDOWN:
 			if event.key == K_ESCAPE:
 				run =False
-	font = pygame.font.Font('freesansbold.ttf', 74)
-	text = font.render(str(ScoreA), 1, white)
-	screen.blit(text, (250,10))
-	text = font.render(str(ScoreB), 1, white)
-	screen.blit(text, (420,10))
 	screen.fill((0, 0, 0))
 	paddle.update()
 	paddle2.update()
 	ball.update(paddle, paddle2)
+	paddle.displayScore("", paddleScore, 35, 20, (255,255,255))
+	paddle2.displayScore("", paddle2Score, screen_width - 25, 20, (255,255,255))
+	if paddleScore >= 5:
+		paddle.displayWin("PLAYER 1 WINS", 420, 200, (255,255,255))
+	if paddle2Score >= 5:
+		paddle.displayWin("PLAYER 2 WINS", 420, 200, (255,255,255))
 	for bullet in bullets:
 		if bullet.update(ball): 
 			bullets.remove(bullet)
