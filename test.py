@@ -1,1 +1,0 @@
-print(eval(input("Enter what you would like to calculate: ")))
