@@ -4,12 +4,7 @@ from pygame.locals import *
 import random
 from random import randint
 import time
-"""
-Name: Abhinav Kotamreddy
-Program: Pong But You Have A Gun
-Program Description: This program adds a twist to the classic arcade game Pong. The gameplay is exactly like regular Pong except you are able to shoot bullets. 
-Bullets allow you to knock the ball away at a distance and add a new element of strategy and skill to the game. You control the game using arrow keys or w and s and the first player to reach 5 points wins.
-"""
+
 # mixer.init()
 pygame.init()
 
@@ -88,7 +83,7 @@ class Bullet:
         self.team = team
         self.speed = 3
         self.surf = pygame.Surface((10,10))
-        self.surf.fill((255,255,255))
+        self.surf.fill((230,120,120))
         self.rect = self.surf.get_rect()
         self.rect.center = (self.x, self.y)
 	# make bullets affect ball
