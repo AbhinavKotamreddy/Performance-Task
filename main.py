@@ -67,9 +67,9 @@ class Paddle():
 			bullets.append(Bullet(self.x, self.y, self.team))
 			self.time = time.time()
 		#set boundaries for players movement
-		if self.y > 410:
+		while self.y > 410:
 			self.y = 410
-		if self.y < 40:
+		while self.y < 40:
 			self.y = 40
 		#center players 	
 		self.rect.center = (self.x, self.y)
