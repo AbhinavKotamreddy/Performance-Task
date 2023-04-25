@@ -23,12 +23,12 @@ pygame.display.set_caption('Pong But You Have A Gun')
 
 #create Paddle Class
 class Paddle():
-	def __init__(self,x, y,team):
+	def __init__(self,x, y):
 		self.surf=pygame.Surface((10,60))
 		self.surf.fill((255,255,255))	
 		self.x = x
 		self.y = y
-		self.team = team
+		#self.team = team
 		self.time = time.time()
 		self.rect = self.surf.get_rect()
 		self.rect.center = (self.x, self.y)
@@ -46,26 +46,28 @@ class Paddle():
 		textRect.center = (x,y)
 		screen.blit(text, textRect)
 
-	def update(self):
+	def update(self, team):
 		#set movement speed
 		speed = 10
 		#get controls for player 1
 		key = pygame.key.get_pressed()
-		if key[pygame.K_w] and self.team == 1:
-			self.y = self.y - speed
-		if key[pygame.K_s] and self.team == 1:
-			self.y = self.y + speed
-		if key[pygame.K_SPACE] and time.time() - self.time > 0.7 and self.team == 1:
-			bullets.append(Bullet(self.x, self.y, self.team))
-			self.time = time.time()
+		if team == 1:
+			if key[pygame.K_w]: 
+				self.y = self.y - speed
+			if key[pygame.K_s]:
+				self.y = self.y + speed
+			if key[pygame.K_SPACE] and time.time() - self.time > 0.7: 
+				bullets.append(Bullet(self.x, self.y,team))
+				self.time = time.time()
 		#get controls for player 2
-		if key[pygame.K_UP] and self.team == 2:
-			self.y = self.y - speed
-		if key[pygame.K_DOWN] and self.team ==2:
-			self.y = self.y + speed
-		if key[pygame.K_LEFT] and time.time() - self.time > 0.7 and self.team == 2:
-			bullets.append(Bullet(self.x, self.y, self.team))
-			self.time = time.time()
+		if team == 2:
+			if key[pygame.K_UP]:
+				self.y = self.y - speed
+			if key[pygame.K_DOWN]:
+				self.y = self.y + speed
+			if key[pygame.K_LEFT] and time.time() - self.time > 0.7:
+				bullets.append(Bullet(self.x, self.y,team))
+				self.time = time.time()
 		#set boundaries for players movement
 		while self.y > 410:
 			self.y = 410
@@ -153,8 +155,8 @@ class Ball:
 		
 		
 #create players and ball
-paddle = Paddle(50, 225, 1)
-paddle2 = Paddle(800, 225, 2)
+paddle = Paddle(50, 225)
+paddle2 = Paddle(800, 225)
 ball = Ball(420,225)
 paddleScore = 0
 paddle2Score = 0
@@ -171,8 +173,8 @@ while run:
 	screen.fill((0, 0, 0))
 	#display scores in corners of screen
 	if gameover == False:
-		paddle.update()
-		paddle2.update()
+		paddle.update(1)
+		paddle2.update(2)
 		ball.update(paddle, paddle2)
 		paddle.displayScore("", paddleScore, 35, 20, (255,255,255))
 		paddle2.displayScore("", paddle2Score, screen_width - 25, 20, (255,255,255))
